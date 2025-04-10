@@ -1,0 +1,26 @@
+{
+  "name": "db-sorteo-v2",
+  "license": "MIT",
+  "scripts": {
+    "queries": "ts-node ./src/queries.ts",
+    "caching": "ts-node ./src/caching.ts",
+    "dev": "node src/server.js --watch"
+  },
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^6.2.0",
+    "@prisma/extension-accelerate": "1.2.1",
+    "@types/node": "22.10.5",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.2.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.7.3"
+  }
+}

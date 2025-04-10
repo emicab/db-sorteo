@@ -1,0 +1,85 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   @default("")
+  user      String
+  createdAt DateTime @default(now())
+
+  raffles Raffle[]
+  tickets Ticket[]
+}
+
+model Raffle {
+  id             String   @id @default(uuid())
+  title          String
+  whatsapp       String
+  alias          String
+  description    String
+  date           DateTime
+  totalNumbers   Int
+  winnersCount   Int
+  pricePerNumber Float
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  ownerId        String
+  owner          User     @relation(fields: [ownerId], references: [id])
+  shortCode      String?  @unique
+
+  tickets Ticket[]
+  prizes  Prize[]
+  results Result[]
+}
+
+model Ticket {
+  id       String @id @default(uuid())
+  number   Int
+  raffleId String
+  raffle   Raffle @relation(fields: [raffleId], references: [id])
+
+  referenceCode String?
+
+  userId String? // Si se vincula a un usuario = comprado
+  user   User?   @relation(fields: [userId], references: [id])
+
+  status    TicketStatus @default(available)
+  buyerName String?
+  buyerDni  String?
+
+  isWinner Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  Result    Result[]
+}
+
+enum TicketStatus {
+  available
+  reserved
+  sold
+}
+
+model Prize {
+  id       String   @id @default(uuid())
+  name     String
+  raffleId String
+  raffle   Raffle   @relation(fields: [raffleId], references: [id])
+  Result   Result[]
+}
+
+model Result {
+  id       String @id @default(uuid())
+  raffleId String
+  raffle   Raffle @relation(fields: [raffleId], references: [id])
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  prizeId  String
+  prize    Prize  @relation(fields: [prizeId], references: [id])
+}
