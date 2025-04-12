@@ -9,6 +9,7 @@ import prizeRoutes from "./routes/prizeRoutes.js";
 import resultRoutes from "./routes/resultRoutes.js";
 import quickRaffleRoutes from "./routes/quickRaffle.js";
 import numberRoutes from "./routes/numberRoutes.js";
+import sellerRoutes from "./routes/sellerRoutes.js";
 
 import morgan from "morgan";
 
@@ -31,6 +32,7 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/prizes", prizeRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/numbers", numberRoutes)
+app.use("/api/sellers", sellerRoutes)
 
 app.use("/api", quickRaffleRoutes);
 

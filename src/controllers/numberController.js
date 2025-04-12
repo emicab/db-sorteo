@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 export const reserveNumbers = async (req, res) => {
   try {
-    const { raffleId, numbers, buyerName, buyerDni } = req.body;
+    const { raffleId, numbers, buyerName, buyerDni, sellerId } = req.body;
     console.log("req.body::", req.body);
 
     if (!raffleId || !numbers?.length || !buyerName || !buyerDni) {
@@ -32,7 +32,7 @@ export const reserveNumbers = async (req, res) => {
       });
     }
 
-    // Reservar los números con buyerName y buyerDni
+    // Reservar los números con buyerName, buyerDni y Seller (vendedor)
     await prisma.ticket.updateMany({
       where: {
         raffleId,
@@ -43,6 +43,7 @@ export const reserveNumbers = async (req, res) => {
         buyerDni,
         status: "reserved",
         referenceCode,
+        sellerId: sellerId || null,
       },
     });
 
@@ -94,6 +95,7 @@ export const approveNumber = async (req, res) => {
       where: { id },
       data: {
         status: "sold",
+        // price: ticket.raffle.pricePerNumber
         //approvedAt: new Date(), // opcional
       },
     });

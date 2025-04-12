@@ -17,6 +17,7 @@ export const createRaffle = async (req, res) => {
       whatsapp,
       alias,
       status = "pending",
+      sellers
     } = req.body;
 
     if (
@@ -46,7 +47,7 @@ export const createRaffle = async (req, res) => {
     const generateShortCode = () => {
       return Math.random().toString(36).substring(2, 8).toUpperCase(); // Ej: "5TG9KZ"
     };
-    const formattedDate = new Date(formData.date).toISOString();
+    const formattedDate = new Date(date).toISOString();
 
     const raffle = await prisma.raffle.create({
       data: {
@@ -61,6 +62,9 @@ export const createRaffle = async (req, res) => {
         alias,
         status,
         shortCode: generateShortCode(),
+        sellers: {
+          create: (sellers || []).map((name) => ({ name })),
+        },
       },
     });
 
@@ -98,6 +102,7 @@ export const getRaffles = async (req, res) => {
 export const deleteRaffle = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id)
     await prisma.raffle.delete({ where: { id } });
     res.json({ message: "Sorteo eliminado" });
   } catch (error) {
@@ -127,7 +132,7 @@ export const updateRaffle = async (req, res) => {
         description,
         date: formattedDate,
         totalNumbers,
-        winnersCount,
+        winnersCount: parseInt(winnersCount),
         pricePerNumber,
       },
     });
@@ -303,9 +308,20 @@ export const drawWinners = async (req, res) => {
     }
 
     if (raffle.status !== "pending") {
-      return res
-        .status(400)
-        .json({ error: "El sorteo no está en estado activo" });
+      return res.status(400).json({ error: "El sorteo ya fue realizado" });
+    }
+
+    // Verificamos si ya hay resultados (no debería haber)
+    const existingResults = await prisma.result.findMany({
+      where: {
+        ticket: {
+          raffleId,
+        },
+      },
+    });
+
+    if (existingResults.length > 0) {
+      return res.status(400).json({ error: "Este sorteo ya tiene resultados generados" });
     }
 
     const soldTickets = await prisma.ticket.findMany({
@@ -318,37 +334,64 @@ export const drawWinners = async (req, res) => {
       });
     }
 
-    // Mezclar y seleccionar ganadores
-    const shuffled = soldTickets.sort(() => 0.5 - Math.random());
-    const winners = shuffled.slice(0, raffle.winnersCount);
-
     const prizes = await prisma.prize.findMany({
       where: { raffleId },
-      // orderBy: { createdAt: "asc" }, // o como lo estés ordenando
     });
 
+    const winners = soldTickets
+      .sort(() => 0.5 - Math.random())
+      .slice(0, raffle.winnersCount);
+
+    const usedPrizeIds = new Set();
+    const usedTicketIds = new Set();
+    const results = [];
+
     for (let i = 0; i < winners.length; i++) {
+      const ticket = winners[i];
+      const prize = prizes[i];
+
+      if (!ticket || !prize) break;
+
+      if (usedTicketIds.has(ticket.id) || usedPrizeIds.has(prize.id)) {
+        continue; // saltamos duplicados
+      }
+
+      usedTicketIds.add(ticket.id);
+      usedPrizeIds.add(prize.id);
+
       await prisma.ticket.update({
-        where: { id: winners[i].id },
+        where: { id: ticket.id },
+        data: { isWinner: true },
+      });
+
+      const result = await prisma.result.create({
         data: {
-          isWinner: true,
-          //prizeName: prizes[i]?.name || "Sin premio asignado", // solo si no tenés prizeId
+          ticketId: ticket.id,
+          prizeId: prize.id,
+        },
+        include: {
+          ticket: true,
+          prize: true,
         },
       });
+
+      results.push(result);
     }
 
-    // Actualizar estado del sorteo
     await prisma.raffle.update({
       where: { id: raffleId },
       data: { status: "finished" },
     });
 
-    res.json({ message: "Sorteo realizado", winners });
+    res.json({ message: "Sorteo realizado", results });
   } catch (error) {
     console.error("❌ Error al realizar sorteo:", error);
     res.status(500).json({ error: "Error al realizar sorteo" });
   }
 };
+
+
+
 
 export const getRaffleWinners = async (req, res) => {
   const { raffleId } = req.params;
@@ -387,5 +430,38 @@ export const getRaffleWinners = async (req, res) => {
   } catch (error) {
     console.error("Error al obtener ganadores:", error);
     res.status(500).json({ error: "Error interno al obtener ganadores" });
+  }
+};
+
+export const getResultsByRaffle = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const raffle = await prisma.raffle.findUnique({
+      where: { id },
+    });
+
+    if (!raffle) {
+      return res.status(404).json({ error: "Sorteo no encontrado." });
+    }
+
+    if (raffle.status !== "finished") {
+      return res.status(400).json({
+        error: "El sorteo aún no ha finalizado.",
+      });
+    }
+
+    const results = await prisma.result.findMany({
+      where: { ticket: { raffleId: id } },
+      include: {
+        ticket: true,
+        prize: true,
+      },
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error("❌ Error al obtener resultados del sorteo:", error);
+    res.status(500).json({ error: "Error del servidor al obtener resultados." });
   }
 };
