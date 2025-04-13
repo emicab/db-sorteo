@@ -2,9 +2,10 @@
   "name": "db-sorteo-v2",
   "license": "MIT",
   "scripts": {
-    "queries": "ts-node ./src/queries.ts",
-    "caching": "ts-node ./src/caching.ts",
-    "dev": "node src/server.js --watch"
+    "dev": "node src/server.js --watch",
+    "build": "prisma generate",
+    "start": "node src/server.js",
+    "postinstall": "prisma generate"
   },
   "type": "module",
   "dependencies": {

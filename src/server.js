@@ -13,26 +13,30 @@ import sellerRoutes from "./routes/sellerRoutes.js";
 
 import morgan from "morgan";
 
-
 dotenv.config();
 const app = express();
 
-app.use(cors({
-  origin: "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
+      "https://db-sorteo.onrender.com",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json());
-app.use(morgan("dev"))
+app.use(morgan("dev"));
 
 app.use("/api/users", userRoutes);
 app.use("/api/raffles", raffleRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/prizes", prizeRoutes);
 app.use("/api/results", resultRoutes);
-app.use("/api/numbers", numberRoutes)
-app.use("/api/sellers", sellerRoutes)
+app.use("/api/numbers", numberRoutes);
+app.use("/api/sellers", sellerRoutes);
 
 app.use("/api", quickRaffleRoutes);
 
