@@ -16,17 +16,17 @@ import morgan from "morgan";
 dotenv.config();
 const app = express();
 
-app.use(
-  cors({
-    origin: [
-      "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
-      "https://db-sorteo.onrender.com",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: [
+    "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
+    "https://rifalo-sorteo.onrender.com",
+    "https://rifalo.com.ar",
+    "https://www.rifalo.com.ar",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(morgan("dev"));
 
