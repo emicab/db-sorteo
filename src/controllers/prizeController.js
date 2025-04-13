@@ -7,7 +7,6 @@ const prisma = new PrismaClient();
 // Crear premio
 export const createPrize = async (req, res) => {
   const { name, raffleId } = req.body;
-  console.log('req.body::', req.body)
 
   try {
     const prize = await prisma.prize.create({

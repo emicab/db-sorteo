@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 export const reserveNumbers = async (req, res) => {
   try {
     const { raffleId, numbers, buyerName, buyerDni, sellerId } = req.body;
-    console.log("req.body::", req.body);
 
     if (!raffleId || !numbers?.length || !buyerName || !buyerDni) {
       return res.status(400).json({ message: "Faltan datos obligatorios." });

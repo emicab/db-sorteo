@@ -10,11 +10,10 @@ import {
   getRaffleNumbers,
   getRaffleByShortCode,
   drawWinners,
-  getRaffleWinners,
   getResultsByRaffle,
+  getCreatorRaffleByShortCode,
 } from "../controllers/raffleController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
-// import { createSellers, getSellersById } from "../controllers/sellerControllers.js";
 
 const router = express.Router();
 
@@ -23,8 +22,9 @@ router.get("/numbers/:id", getRaffleNumbers);
 router.get("/:id", getRaffleById); // Para obtener un sorteo por ID
 router.get("/:id/creator", verifyToken, getRaffleDetailsForCreator);
 router.get("/:id/details", getRaffleDetail);
-router.get("/shortcode/:code", getRaffleByShortCode);
 router.get("/:id/results", getResultsByRaffle);
+router.get("/shortcode/:shortcode", getRaffleByShortCode);
+router.get("/creator/shortcode/:shortcode", verifyToken, getCreatorRaffleByShortCode);
 
 router.post("/", createRaffle);
 // router.post("/:id/sellers", createSellers)

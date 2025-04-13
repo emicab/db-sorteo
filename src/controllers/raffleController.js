@@ -17,7 +17,7 @@ export const createRaffle = async (req, res) => {
       whatsapp,
       alias,
       status = "pending",
-      sellers
+      sellers,
     } = req.body;
 
     if (
@@ -40,9 +40,7 @@ export const createRaffle = async (req, res) => {
 
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Decoded JWT:", decoded);
     const userId = decoded.id;
-    console.log("User ID:", userId);
 
     const generateShortCode = () => {
       return Math.random().toString(36).substring(2, 8).toUpperCase(); // Ej: "5TG9KZ"
@@ -102,7 +100,6 @@ export const getRaffles = async (req, res) => {
 export const deleteRaffle = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id)
     await prisma.raffle.delete({ where: { id } });
     res.json({ message: "Sorteo eliminado" });
   } catch (error) {
@@ -123,7 +120,6 @@ export const updateRaffle = async (req, res) => {
     } = req.body;
 
     const formattedDate = new Date(date).toISOString();
-
 
     const updatedRaffle = await prisma.raffle.update({
       where: { id: id },
@@ -170,20 +166,18 @@ export const getRaffleDetailsForCreator = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId;
-    console.log("User ID:", userId);
 
     // Verificamos que req.user existe
     if (!req.userId) {
       return res.status(401).json({ error: "Token inválido o faltante." });
     }
 
-
     const raffle = await prisma.raffle.findUnique({
       where: { id },
       include: {
         tickets: true,
         prizes: true,
-        owner: true, 
+        owner: true,
       },
     });
 
@@ -217,7 +211,6 @@ export const getRaffleDetailsForCreator = async (req, res) => {
     res.status(500).json({ error: "Error al obtener el sorteo" });
   }
 };
-
 
 export const getRaffleDetail = async (req, res) => {
   const { id } = req.params;
@@ -271,17 +264,15 @@ export const getRaffleNumbers = async (req, res) => {
 };
 
 export const getRaffleByShortCode = async (req, res) => {
-  const { code } = req.params;
-
+  const { shortcode } = req.params;
   try {
     const raffle = await prisma.raffle.findUnique({
-      where: { shortCode: code.toUpperCase() }, // puede normalizarlo si querés
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        shortCode: true,
-      },
+      where: { shortCode: shortcode.toUpperCase() }, // puede normalizarlo si querés
+      include: {
+        prizes: true,
+        tickets: true,
+        sellers: true,
+      }
     });
 
     if (!raffle) {
@@ -321,7 +312,9 @@ export const drawWinners = async (req, res) => {
     });
 
     if (existingResults.length > 0) {
-      return res.status(400).json({ error: "Este sorteo ya tiene resultados generados" });
+      return res
+        .status(400)
+        .json({ error: "Este sorteo ya tiene resultados generados" });
     }
 
     const soldTickets = await prisma.ticket.findMany({
@@ -389,9 +382,6 @@ export const drawWinners = async (req, res) => {
     res.status(500).json({ error: "Error al realizar sorteo" });
   }
 };
-
-
-
 
 export const getRaffleWinners = async (req, res) => {
   const { raffleId } = req.params;
@@ -462,6 +452,36 @@ export const getResultsByRaffle = async (req, res) => {
     res.json(results);
   } catch (error) {
     console.error("❌ Error al obtener resultados del sorteo:", error);
-    res.status(500).json({ error: "Error del servidor al obtener resultados." });
+    res
+      .status(500)
+      .json({ error: "Error del servidor al obtener resultados." });
+  }
+};
+
+export const getCreatorRaffleByShortCode = async (req, res) => {
+  const { shortcode } = req.params;
+  const userId = req.userId;
+
+  try {
+    const raffle = await prisma.raffle.findFirst({
+      where: {
+        shortCode: shortcode.toUpperCase(),
+        ownerId: userId,
+      },
+      include: {
+        prizes: true,
+        tickets: true,
+        sellers: true,
+      },
+    });
+
+    if (!raffle) {
+      return res.status(404).json({ message: "Sorteo no encontrado o no autorizado." });
+    }
+
+    res.status(200).json(raffle);
+  } catch (error) {
+    console.error("Error al obtener sorteo del creador:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
   }
 };

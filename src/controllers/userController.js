@@ -8,15 +8,27 @@ const JWT_SECRET = process.env.JWT_SECRET || "clave_secreta";
 // Registro de usuario
 export const registerUser = async (req, res) => {
   try {
-    const { user, email, password } = req.body;
+    const { username, email, password } = req.body;
+    console.log(req.body);
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: "Faltan campos obligatorios" });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
+    if (existingUser) {
+      return res.status(400).json({ error: "El usuario ya existe" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const username = await prisma.user.create({
-      data: { user, email, password: hashedPassword },
+    const user = await prisma.user.create({
+      data: { username, email, password: hashedPassword },
     });
 
-    res.status(201).json({ message: "Usuario registrado", username });
+    res.status(201).json({ message: "Usuario registrado", user });
   } catch (error) {
     res.status(500).json({ error: "Error al registrar el usuario" });
   }
@@ -25,9 +37,9 @@ export const registerUser = async (req, res) => {
 // Inicio de sesión
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { username } });
 
     if (!user) {
       return res.status(401).json({ error: "Credenciales incorrectas" });

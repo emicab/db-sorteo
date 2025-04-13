@@ -14,21 +14,19 @@ export const getSellersById = async (req, res) => {
 };
 
 export const createSellers = async (req, res) => {
-  // const { raffleId } = req.params;
-  const { name, raffleId } = req.body;
+  const { sellers, raffleId } = req.body;
 
-  const nameList = Array.isArray(name) ? name : [name]; // forzar a array
+  const nameList = Array.isArray(sellers) ? sellers : [sellers]; // forzar a array
 
   if (nameList.length === 0) {
     return res
       .status(400)
       .json({ error: "Lista de vendedores vacía o inválida." });
   }
-
   // Limpiar nombres (quitar espacios) y filtrar vacíos
   const cleanSellers = nameList
-    .map((name) => name.trim())
-    .filter((name) => name.length > 0);
+    .filter((name) => name.length > 0)
+    // .map((name) => name.trim());
 
   // Verificar si hay duplicados en el array
   const uniqueSet = new Set(cleanSellers);
@@ -127,7 +125,6 @@ export const updateSeller = async (req, res) => {
 
 export const deleteSeller = async (req, res) => {
   const { id } = req.params;
-  console.log("Delete ID: ", id);
 
   if (!id) {
     return res
@@ -140,12 +137,10 @@ export const deleteSeller = async (req, res) => {
       where: { id }, // ✅ Usar el campo correcto
       include: { tickets: true },
     });
-    console.log("seller delete:: ", seller);
 
     if (!seller) {
       return res.status(404).json({ error: "Vendedor no encontrado." });
     }
-    console.log("sellers.tickets:: ", seller.tickets);
     if (seller.tickets.length > 0) {
       return res.status(400).json({
         error: "No se puede eliminar un vendedor que tiene tickets asignados.",
@@ -156,12 +151,10 @@ export const deleteSeller = async (req, res) => {
     res.json({ message: "Vendedor eliminado correctamente." });
   } catch (error) {
     console.error("❌ Error al eliminar vendedor:", error);
-    res
-      .status(500)
-      .json({
-        error: "Error del servidor al eliminar el vendedor.",
-        details: error.message,
-      });
+    res.status(500).json({
+      error: "Error del servidor al eliminar el vendedor.",
+      details: error.message,
+    });
   }
 };
 
