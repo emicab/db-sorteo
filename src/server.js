@@ -18,7 +18,10 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
+  origin: [
+    "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
+    "https://db-sorteo.onrender.com"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
