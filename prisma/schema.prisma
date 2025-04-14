@@ -1,69 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
+  createdAt DateTime @default(now())
   password  String   @default("")
   username  String   @unique
-  createdAt DateTime @default(now())
-  verified  Boolean  @default(false)
-
-  raffles Raffle[]
-  tickets Ticket[]
+  raffles   Raffle[]
+  tickets   Ticket[]
 }
 
 model Raffle {
   id             String   @id @default(uuid())
-  title          String
-  whatsapp       String
-  alias          String
-  description    String
-  date           DateTime
-  totalNumbers   Int
-  winnersCount   Int
-  pricePerNumber Float
   status         String   @default("pending")
   createdAt      DateTime @default(now())
   ownerId        String
-  owner          User     @relation(fields: [ownerId], references: [id])
+  date           DateTime
+  description    String
+  pricePerNumber Float
+  title          String
+  totalNumbers   Int
+  winnersCount   Int
+  alias          String
+  whatsapp       String
   shortCode      String?  @unique
-
-  tickets Ticket[]
-  prizes  Prize[]
-  results Result[]
-  sellers Seller[]
+  prizes         Prize[]
+  owner          User     @relation(fields: [ownerId], references: [id])
+  results        Result[]
+  sellers        Seller[]
+  tickets        Ticket[]
 }
 
 model Ticket {
   id            String       @id @default(uuid())
   number        Int
   raffleId      String
-  raffle        Raffle       @relation(fields: [raffleId], references: [id], onDelete: Cascade)
-  referenceCode String?
-  userId        String? // Si se vincula a un usuario = comprado
-  user          User?        @relation(fields: [userId], references: [id])
-  status        TicketStatus @default(available)
-  buyerName     String?
   buyerDni      String?
-  sellerId      String?
-  isWinner      Boolean      @default(false)
+  buyerName     String?
+  userId        String?
   createdAt     DateTime     @default(now())
+  status        TicketStatus @default(available)
+  referenceCode String?
+  isWinner      Boolean      @default(false)
+  sellerId      String?
   price         Float?
   Result        Result[]
+  raffle        Raffle       @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   sellers       Seller?      @relation(fields: [sellerId], references: [id])
-}
-
-enum TicketStatus {
-  available
-  reserved
-  sold
+  user          User?        @relation(fields: [userId], references: [id])
 }
 
 model Prize {
@@ -76,20 +67,26 @@ model Prize {
 
 model Result {
   id        String   @id @default(uuid())
-  ticketId  String
-  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  prizeId   String
-  prize     Prize    @relation(fields: [prizeId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  Raffle    Raffle?  @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   raffleId  String?
+  ticketId  String
+  prizeId   String
+  createdAt DateTime @default(now())
+  prize     Prize    @relation(fields: [prizeId], references: [id], onDelete: Cascade)
+  Raffle    Raffle?  @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
 model Seller {
   id        String   @id @default(uuid())
   name      String
   raffleId  String
-  raffle    Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  raffle    Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   tickets   Ticket[]
+}
+
+enum TicketStatus {
+  available
+  reserved
+  sold
 }
