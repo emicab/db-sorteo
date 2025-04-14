@@ -89,6 +89,7 @@ export const getRaffles = async (req, res) => {
     const raffles = await prisma.raffle.findMany({
       where: { ownerId: userId },
       orderBy: { createdAt: "desc" },
+      
     });
     res.json(raffles);
   } catch (error) {
@@ -267,11 +268,17 @@ export const getRaffleByShortCode = async (req, res) => {
   const { shortcode } = req.params;
   try {
     const raffle = await prisma.raffle.findUnique({
-      where: { shortCode: shortcode.toUpperCase() }, // puede normalizarlo si querés
+      where: { shortCode: shortcode.toUpperCase() },
       include: {
         prizes: true,
         tickets: true,
         sellers: true,
+        owner: {
+          select: {
+            username: true,
+            verified: true,
+          }
+        }
       },
     });
 
@@ -285,6 +292,7 @@ export const getRaffleByShortCode = async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
+
 
 export const drawWinners = async (req, res) => {
   const { raffleId } = req.params;
