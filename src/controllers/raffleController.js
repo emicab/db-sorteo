@@ -276,7 +276,7 @@ export const getRaffleByShortCode = async (req, res) => {
       owner: {
         select: {
           username: true,
-          verified: true
+          /* verified: true */
         },
       }
     });
