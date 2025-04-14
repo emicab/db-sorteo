@@ -22,6 +22,7 @@ app.use(cors({
     "https://rifalo.onrender.com",
     "https://rifalo.com.ar",
     "https://www.rifalo.com.ar",
+    "https://rifalo.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
