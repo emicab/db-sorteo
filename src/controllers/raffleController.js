@@ -272,6 +272,12 @@ export const getRaffleByShortCode = async (req, res) => {
         prizes: true,
         tickets: true,
         sellers: true,
+      },
+      owner: {
+        select: {
+          username: true,
+          verified: true
+        },
       }
     });
 
