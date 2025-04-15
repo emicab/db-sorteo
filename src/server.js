@@ -22,7 +22,8 @@ app.use(cors({
     "https://rifalo.onrender.com",
     "https://rifalo.com.ar",
     "https://www.rifalo.com.ar",
-    "https://rifalo.vercel.app"
+    "https://rifalo.vercel.app",
+    "http://localhost:5173",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -47,5 +48,5 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`Servidor corriendo en el puerto https://localhost:${PORT}`);
 });

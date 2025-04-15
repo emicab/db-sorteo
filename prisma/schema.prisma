@@ -13,7 +13,7 @@ model User {
   createdAt DateTime @default(now())
   password  String   @default("")
   username  String   @unique
-  // verified  Boolean  @default(false)
+  verified  Boolean  @default(false)
   raffles   Raffle[]
   tickets   Ticket[]
 }

@@ -1,0 +1,11 @@
+# Forcing consistent line endings
+* text=auto
+
+# Force LF for all JS-related files
+*.js text eol=lf
+*.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+
+# Ignore node_modules completely
+node_modules/** -text

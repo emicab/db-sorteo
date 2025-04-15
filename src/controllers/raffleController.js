@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { verify } from "crypto";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
@@ -272,7 +273,14 @@ export const getRaffleByShortCode = async (req, res) => {
         prizes: true,
         tickets: true,
         sellers: true,
+        owner: {
+          select: {
+            username: true,
+            verified: true,
+          }
+        }
       },
+      
     });
 
     if (!raffle) {
@@ -472,6 +480,7 @@ export const getCreatorRaffleByShortCode = async (req, res) => {
         prizes: true,
         tickets: true,
         sellers: true,
+        
       },
     });
 
