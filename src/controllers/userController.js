@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { isEmailValid } from "../utils/validateEmails.js";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "clave_secreta";
@@ -9,7 +10,15 @@ const JWT_SECRET = process.env.JWT_SECRET || "clave_secreta";
 export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    console.log(req.body);
+
+    const {valid, reason, validators} = await isEmailValid(email)
+    if (!valid) {
+      return res.status(400).json({
+        error: 'Correo inválido o sospechoso',
+        details: reason,
+        validator: validators[reason]
+      })
+    }
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
