@@ -10,6 +10,9 @@ import resultRoutes from "./routes/resultRoutes.js";
 import quickRaffleRoutes from "./routes/quickRaffle.js";
 import numberRoutes from "./routes/numberRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
+import oauthRoutes from "./routes/oauthRoutes.js";
+import paymentsRoutes from "./routes/paymentsRoutes.js";
+import mpRoutes from "./routes/mpRoutes.js";
 
 import morgan from "morgan";
 
@@ -24,6 +27,7 @@ app.use(cors({
     "https://www.rifalo.com.ar",
     "https://rifalo.vercel.app",
     "http://localhost:5173",
+
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -42,11 +46,17 @@ app.use("/api/sellers", sellerRoutes);
 
 app.use("/api", quickRaffleRoutes);
 
+// Integracion de MP
+app.use("/api/oauth", oauthRoutes);
+app.use("/api/payments", paymentsRoutes);
+app.use("/api/mp", mpRoutes);
+
+
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto https://localhost:${PORT}`);
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
