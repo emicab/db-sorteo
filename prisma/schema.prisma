@@ -15,6 +15,13 @@ model User {
   username  String   @unique
   verified  Boolean  @default(false)
   userType  TypesUser @default(user)
+
+  // DATA MP
+  mp_access_token String? @default("")
+  mp_refresh_token String? @default("")
+  mp_user_id BigInt? @default(0) //PUSHEAR
+  mp_connected Boolean? @default(false)
+
   raffles   Raffle[]
   tickets   Ticket[]
 }

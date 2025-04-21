@@ -67,3 +67,29 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ error: "Error en el inicio de sesión" });
   }
 };
+
+// obtener usuario por id
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const user = await prisma.user.findUnique({ 
+      where: { id },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        mp_connected: true,
+        mp_user_id: true,
+        mp_access_token: true,
+        mp_refresh_token: true,
+      }, 
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el usuario" });
+  }
+};
