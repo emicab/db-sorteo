@@ -1,3 +1,4 @@
+import { format } from "@formkit/tempo";
 import { PrismaClient } from "@prisma/client";
 import { verify } from "crypto";
 import jwt from "jsonwebtoken";
@@ -46,7 +47,8 @@ export const createRaffle = async (req, res) => {
     const generateShortCode = () => {
       return Math.random().toString(36).substring(2, 8).toUpperCase(); // Ej: "5TG9KZ"
     };
-    const formattedDate = new Date(date).toISOString();
+
+    const formattedDate = new Date(`${date}T12:00:00`).toISOString();
 
     const raffle = await prisma.raffle.create({
       data: {
@@ -122,8 +124,8 @@ export const updateRaffle = async (req, res) => {
       whatsapp,
     } = req.body;
 
-    const formattedDate = new Date(date).toISOString();
-
+    const formattedDate = new Date(`${date}T12:00:00`).toISOString();
+    
     const updatedRaffle = await prisma.raffle.update({
       where: { id: id },
       data: {
