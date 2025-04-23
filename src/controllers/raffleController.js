@@ -112,12 +112,14 @@ export const updateRaffle = async (req, res) => {
   try {
     const { id } = req.params;
     const {
+      alias,
       title,
       description,
       date,
       totalNumbers,
       winnersCount,
       pricePerNumber,
+      whatsapp,
     } = req.body;
 
     const formattedDate = new Date(date).toISOString();
@@ -125,15 +127,34 @@ export const updateRaffle = async (req, res) => {
     const updatedRaffle = await prisma.raffle.update({
       where: { id: id },
       data: {
+        alias,
         title,
         description,
         date: formattedDate,
-        totalNumbers,
+        totalNumbers: parseInt(totalNumbers),
         winnersCount: parseInt(winnersCount),
-        pricePerNumber,
+        pricePerNumber: parseFloat(pricePerNumber),
+        whatsapp,
       },
     });
 
+    // Verificar numeros existentes y agregar nuevos si es necesario
+    const existingNumbers = await prisma.ticket.findMany({
+      where: { raffleId: id },
+      select: { number: true },
+    });
+    const existingNumbersSet = new Set(existingNumbers.map((n) => n.number));
+    const newNumbers = Array.from({ length: totalNumbers }, (_, i) => i + 1).filter(
+      (num) => !existingNumbersSet.has(num)
+    );
+    const newNumbersData = newNumbers.map((num) => ({ number: num, raffleId: id }));
+
+    if (newNumbersData.length > 0) {
+      await prisma.ticket.createMany({
+        data: newNumbersData,
+      });
+    }
+    
     res.json(updatedRaffle);
   } catch (error) {
     console.error("Error al actualizar sorteo:", error);

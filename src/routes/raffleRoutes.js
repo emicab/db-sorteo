@@ -14,6 +14,8 @@ import {
   getCreatorRaffleByShortCode,
 } from "../controllers/raffleController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
+import { uploadExcel } from "../utils/uploadExcel.js";
+import multer from "multer";
 
 const router = express.Router();
 
@@ -31,6 +33,8 @@ router.post("/", createRaffle);
 router.post("/:raffleId/draw", drawWinners); // AGREGAR VERIFYTOKEN
 
 
+const upload = multer({ dest: "uploads/" });
+router.post("/:id/import", upload.single("file"), uploadExcel)
 
 router.put("/:id", updateRaffle); // Para editar un sorteo
 
