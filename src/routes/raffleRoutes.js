@@ -12,14 +12,16 @@ import {
   drawWinners,
   getResultsByRaffle,
   getCreatorRaffleByShortCode,
+  getRafflesPublic,
 } from "../controllers/raffleController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
 router.get("/", verifyToken, getRaffles);
+router.get("/public", getRafflesPublic);
 router.get("/numbers/:id", getRaffleNumbers);
-router.get("/:id", getRaffleById); // Para obtener un sorteo por ID
+router.get("/:id", getRaffleById);
 router.get("/:id/creator", verifyToken, getRaffleDetailsForCreator);
 router.get("/:id/details", getRaffleDetail);
 router.get("/:id/results", getResultsByRaffle);
@@ -28,11 +30,9 @@ router.get("/creator/shortcode/:shortcode", verifyToken, getCreatorRaffleByShort
 
 router.post("/", createRaffle);
 // router.post("/:id/sellers", createSellers)
-router.post("/:raffleId/draw", drawWinners); // AGREGAR VERIFYTOKEN
+router.post("/:raffleId/draw", drawWinners);
 
-
-
-router.put("/:id", updateRaffle); // Para editar un sorteo
+router.put("/:id", updateRaffle);
 
 router.delete("/:id", deleteRaffle);
 

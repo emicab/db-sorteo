@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { verify } from "crypto";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
@@ -19,6 +18,7 @@ export const createRaffle = async (req, res) => {
       alias,
       status = "pending",
       sellers,
+      privacity
     } = req.body;
 
     if (
@@ -46,7 +46,7 @@ export const createRaffle = async (req, res) => {
     const generateShortCode = () => {
       return Math.random().toString(36).substring(2, 8).toUpperCase(); // Ej: "5TG9KZ"
     };
-    const formattedDate = new Date(`${date}T12:00:00`).toISOString();
+    const formattedDate = new Date(date).toISOString();
 
     const raffle = await prisma.raffle.create({
       data: {
@@ -64,6 +64,7 @@ export const createRaffle = async (req, res) => {
         sellers: {
           create: (sellers || []).map((name) => ({ name })),
         },
+        privacity: privacity || "private",
       },
     });
 
@@ -118,6 +119,7 @@ export const updateRaffle = async (req, res) => {
       totalNumbers,
       winnersCount,
       pricePerNumber,
+      privacity
     } = req.body;
 
     const formattedDate = new Date(`${date}T12:00:00`).toISOString();
@@ -131,6 +133,7 @@ export const updateRaffle = async (req, res) => {
         totalNumbers,
         winnersCount: parseInt(winnersCount),
         pricePerNumber,
+        privacity,
       },
     });
 
@@ -280,7 +283,7 @@ export const getRaffleByShortCode = async (req, res) => {
           }
         }
       },
-      
+
     });
 
     if (!raffle) {
@@ -480,7 +483,7 @@ export const getCreatorRaffleByShortCode = async (req, res) => {
         prizes: true,
         tickets: true,
         sellers: true,
-        
+
       },
     });
 
@@ -494,3 +497,37 @@ export const getCreatorRaffleByShortCode = async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
+
+export const getRafflesPublic = async (req, res) => {
+
+  try {
+    const raffles = await prisma.raffle.findMany({
+      where: { privacity: "public", status: "pending" },
+      select: {
+        id: true,
+        title: true,
+        pricePerNumber: true,
+        date: true,
+        status: true,
+        shortCode: true,
+        owner: {
+          select: {
+            username: true,
+            verified: true
+          },
+        },
+      },
+      orderBy: {
+        owner: {
+          verified: "desc",
+        },
+      }
+    })
+    if (!raffles) {
+      return res.status(404).json({ message: "No hay sorteos públicos disponibles." });
+    }
+    res.status(200).json(raffles);
+  } catch (error) {
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+}

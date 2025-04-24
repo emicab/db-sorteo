@@ -18,7 +18,7 @@ const app = express();
 
 app.use(cors({
   origin: [
-    "https://5173-idx-soorteo-v2-1743519701525.cluster-duylic2g3fbzerqpzxxbw6helm.cloudworkstations.dev",
+    "https://kh8mlfw9-5173.brs.devtunnels.ms",
     "https://rifalo.onrender.com",
     "https://rifalo.com.ar",
     "https://www.rifalo.com.ar",
@@ -46,7 +46,7 @@ app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto https://localhost:${PORT}`);
 });

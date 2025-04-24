@@ -19,9 +19,9 @@ model User {
 }
 
 model Raffle {
-  id             String   @id @default(uuid())
-  status         String   @default("pending")
-  createdAt      DateTime @default(now())
+  id             String          @id @default(uuid())
+  status         String          @default("pending")
+  createdAt      DateTime        @default(now())
   ownerId        String
   date           DateTime
   description    String
@@ -31,9 +31,10 @@ model Raffle {
   winnersCount   Int
   alias          String
   whatsapp       String
-  shortCode      String?  @unique
+  shortCode      String?         @unique
   prizes         Prize[]
-  owner          User     @relation(fields: [ownerId], references: [id])
+  owner          User            @relation(fields: [ownerId], references: [id])
+  privacity      RafflePrivacity @default(public)
   results        Result[]
   sellers        Seller[]
   tickets        Ticket[]
@@ -90,4 +91,9 @@ enum TicketStatus {
   available
   reserved
   sold
+}
+
+enum RafflePrivacity {
+  public
+  private
 }
