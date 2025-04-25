@@ -33,6 +33,11 @@ export const createRaffle = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
+    //limitar sorteos a 1 por usuario, 200 numeros
+    if (totalNumbers > 200) {
+      return res.status(400).json({ message: "El número máximo de números es 200" });
+    }
+
 
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -44,9 +49,21 @@ export const createRaffle = async (req, res) => {
     const userId = decoded.id;
 
     const generateShortCode = () => {
-      return Math.random().toString(36).substring(2, 8).toUpperCase(); // Ej: "5TG9KZ"
+      return Math.random().toString(36).substring(2, 8).toUpperCase();
     };
     const formattedDate = new Date(date).toISOString();
+
+    // verificar si el usuario ya tiene un sorteo creado anteriormente
+    const existingRaffle = await prisma.raffle.findFirst({
+      where: {
+        ownerId: userId,
+      },
+    });
+    if (existingRaffle) {
+      return res.status(400).json({
+        message: "Ya tienes un sorteo creado.",
+      });
+    }
 
     const raffle = await prisma.raffle.create({
       data: {
