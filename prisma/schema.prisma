@@ -14,6 +14,7 @@ model User {
   password  String   @default("")
   username  String   @unique
   verified  Boolean  @default(false)
+  userType  TypesUser @default(user)
   raffles   Raffle[]
   tickets   Ticket[]
 }
@@ -96,4 +97,10 @@ enum TicketStatus {
 enum RafflePrivacity {
   public
   private
+}
+
+enum TypesUser {
+  admin
+  user
+  tester
 }
