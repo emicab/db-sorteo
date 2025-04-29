@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  password  String   @default("")
-  username  String   @unique
-  verified  Boolean  @default(false)
+  id        String    @id @default(uuid())
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  password  String    @default("")
+  username  String    @unique
+  verified  Boolean   @default(false)
   userType  TypesUser @default(user)
 
   // DATA MP
-  mp_access_token String? @default("")
-  mp_refresh_token String? @default("")
-  mp_user_id BigInt? @default(0) //PUSHEAR
-  mp_connected Boolean? @default(false)
+  mp_access_token  String?  @default("")
+  mp_refresh_token String?  @default("")
+  mp_user_id       String?  @default("") //PUSHEAR
+  mp_connected     Boolean? @default(false)
 
-  raffles   Raffle[]
-  tickets   Ticket[]
+  raffles Raffle[]
+  tickets Ticket[]
 }
 
 model Raffle {
@@ -93,6 +93,19 @@ model Seller {
   createdAt DateTime @default(now())
   raffle    Raffle   @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   tickets   Ticket[]
+}
+
+model Sale {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  amountReceived Float
+  buyerName     String
+  buyerDni      String
+  numbers       Int[] 
+  raffleId      String
+  mp_payment_id String
+  sellerId      String?
+  transactionAmount Float?
 }
 
 enum TicketStatus {

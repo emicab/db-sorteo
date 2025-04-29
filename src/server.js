@@ -13,6 +13,7 @@ import sellerRoutes from "./routes/sellerRoutes.js";
 import oauthRoutes from "./routes/oauthRoutes.js";
 import paymentsRoutes from "./routes/paymentsRoutes.js";
 import mpRoutes from "./routes/mpRoutes.js";
+import salesRoutes from "./routes/salesRoutes.js";
 
 import morgan from "morgan";
 
@@ -43,6 +44,7 @@ app.use("/api/prizes", prizeRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/numbers", numberRoutes);
 app.use("/api/sellers", sellerRoutes);
+app.use("/api/sales", salesRoutes);
 
 app.use("/api", quickRaffleRoutes);
 

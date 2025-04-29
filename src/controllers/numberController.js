@@ -79,6 +79,9 @@ export const reserveNumbers = async (req, res) => {
 
 export const approveNumber = async (req, res) => {
   const { id } = req.params;
+  const {raffleId} = req.body;
+
+  console.log(raffleId)
 
   try {
     const number = await prisma.ticket.findUnique({

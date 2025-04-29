@@ -28,7 +28,6 @@ export const handleOAuthCallback = async (req, res) => {
   
   try {
     const tokenData = await exchangeCodeForToken(code, process.env.MP_REDIRECT_URI);
-    console.log("TOKENDATA:: ",tokenData)
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
