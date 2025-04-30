@@ -29,6 +29,7 @@ app.use(cors({
     "https://rifalo.vercel.app",
     "http://localhost:5173",
 
+
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -54,11 +55,18 @@ app.use("/api/payments", paymentsRoutes);
 app.use("/api/mp", mpRoutes);
 
 
+// Integracion de MP
+app.use("/api/oauth", oauthRoutes);
+app.use("/api/payments", paymentsRoutes);
+app.use("/api/mp", mpRoutes);
+
+
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
