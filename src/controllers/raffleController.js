@@ -520,7 +520,7 @@ export const getRafflesPublic = async (req, res) => {
 
   try {
     const raffles = await prisma.raffle.findMany({
-      where: { privacity: "public", status: "pending" },
+      where: { privacity: "public" },
       select: {
         id: true,
         title: true,
