@@ -39,6 +39,7 @@ export const handleMPWebhook = async (req, res) => {
             buyer_name: buyerName,
             buyer_dni: buyerDni,
             seller_id: sellerId,
+            short_code: shortCode
           },
           transaction_details: { net_received_amount: amountReceived },
           transaction_amount
@@ -53,7 +54,8 @@ export const handleMPWebhook = async (req, res) => {
                 amountReceived: amountReceived,
                 mp_payment_id: paymentId,
                 sellerId,
-                transactionAmount: transaction_amount
+                transactionAmount: transaction_amount,
+                shortCode
             },
         });
 

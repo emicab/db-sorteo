@@ -106,6 +106,7 @@ model Sale {
   mp_payment_id String
   sellerId      String?
   transactionAmount Float?
+  shortCode      String?
 }
 
 enum TicketStatus {

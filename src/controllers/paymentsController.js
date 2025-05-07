@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export const createPreference = async (req, res) => {
   try {
-    const { raffleId, numbers, buyerName, buyerDni, sellerId } = req.body;
+    const { raffleId, numbers, buyerName, buyerDni, sellerId, shortCode } = req.body;
 
     // Validaciones básicas
     if (!raffleId || !numbers?.length || !buyerName || !buyerDni) {
@@ -53,7 +53,7 @@ export const createPreference = async (req, res) => {
           buyerName,
           buyerDni,
           sellerId,
-
+          shortCode
         },
         back_urls: {
           success: `${process.env.FRONTEND_URL}/mp/payment-success`,
